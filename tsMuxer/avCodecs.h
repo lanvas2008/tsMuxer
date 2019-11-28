@@ -25,34 +25,34 @@ const static int CODEC_V_MPEG4_H264_DEP = 14;
 const static int CODEC_V_MPEG4_H265 = 15;
 
 struct CodecInfo {
-  CodecInfo() : codecID(0) {}
-  CodecInfo(int codecID, const std::string& displayName,
-            const std::string& programName) {
-    this->codecID = codecID;
-    this->displayName = displayName;
-    this->programName = programName;
-  }
-  int codecID;
-  std::string displayName;
-  std::string programName;
+   CodecInfo() : codecID(0) {}
+   CodecInfo(int codecID, const std::string& displayName,
+             const std::string& programName) {
+      this->codecID = codecID;
+      this->displayName = displayName;
+      this->programName = programName;
+   }
+   int codecID;
+   std::string displayName;
+   std::string programName;
 };
 
 struct CheckStreamRez {
-  CheckStreamRez()
-      : trackID(0),
-        delay(0),
-        multiSubStream(false),
-        isSecondary(false),
-        unused(false) {}
-  CodecInfo codecInfo;
-  std::string streamDescr;
-  std::string lang;
-  uint32_t trackID;
-  int64_t delay;  // auto delay for audio
+   CheckStreamRez()
+       : trackID(0),
+         delay(0),
+         multiSubStream(false),
+         isSecondary(false),
+         unused(false) {}
+   CodecInfo codecInfo;
+   std::string streamDescr;
+   std::string lang;
+   uint32_t trackID;
+   int64_t delay;  // auto delay for audio
 
-  bool multiSubStream;
-  bool isSecondary;
-  bool unused;
+   bool multiSubStream;
+   bool isSecondary;
+   bool unused;
 };
 
 const static CodecInfo hevcCodecInfo(CODEC_V_MPEG4_H265, "HEVC",

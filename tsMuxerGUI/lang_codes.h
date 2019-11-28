@@ -4,8 +4,8 @@
 #include <QString>
 
 struct QtvLangCode {
-  QString code;
-  QString lang;
+   QString code;
+   QString lang;
 };
 
 static const char* shortLangList[][2] = {

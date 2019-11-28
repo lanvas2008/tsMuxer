@@ -11,21 +11,21 @@
 
 #if 1
 extern bool sLastMsg;
-#define LTRACE(level, errIndex, msg)         \
-  {                                          \
-    if (errIndex & 2) {                      \
-      if (level <= LT_WARN)                  \
-        std::cerr << msg << std::endl;       \
-      else if (level == LT_INFO)             \
-        std::cout << msg << std::endl;       \
-      if (level <= LT_INFO) sLastMsg = true; \
-    }                                        \
-  }
+#define LTRACE(level, errIndex, msg)            \
+   {                                            \
+      if (errIndex & 2) {                       \
+         if (level <= LT_WARN)                  \
+            std::cerr << msg << std::endl;      \
+         else if (level == LT_INFO)             \
+            std::cout << msg << std::endl;      \
+         if (level <= LT_INFO) sLastMsg = true; \
+      }                                         \
+   }
 class Process {
- public:
-  static void sleep(int millisec) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(millisec));
-  }
+  public:
+   static void sleep(int millisec) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(millisec));
+   }
 };
 
 #endif
@@ -89,13 +89,13 @@ std::string quoteStr(const std::string& val);
 std::vector<std::string> extractFileList(const std::string& val);
 
 struct AVRational {
-  int num;  ///< numerator
-  int den;  ///< denominator
-  AVRational() { num = den = 0; }
-  AVRational(int _num, int _den) {
-    num = _num;
-    den = _den;
-  }
+   int num;  ///< numerator
+   int den;  ///< denominator
+   AVRational() { num = den = 0; }
+   AVRational(int _num, int _den) {
+      num = _num;
+      den = _den;
+   }
 };
 
 typedef std::vector<std::pair<int, int>>
@@ -116,35 +116,35 @@ double timeToFloatW(const std::wstring& chapterStr);
 std::string toNativeSeparators(const std::string& dirName);
 
 static int64_t nanoClockToPts(int64_t value) {
-  return int64_t(value / INT_FREQ_TO_TS_FREQ + (value >= 0 ? 0.5 : -0.5));
+   return int64_t(value / INT_FREQ_TO_TS_FREQ + (value >= 0 ? 0.5 : -0.5));
 }
 static int64_t ptsToNanoClock(int64_t value) {
-  return int64_t(value * INT_FREQ_TO_TS_FREQ + (value >= 0 ? 0.5 : -0.5));
+   return int64_t(value * INT_FREQ_TO_TS_FREQ + (value >= 0 ? 0.5 : -0.5));
 }
 
 struct PIPParams {
-  enum PipCorner { TopLeft, TopRight, BottomRight, BottomLeft };
+   enum PipCorner { TopLeft, TopRight, BottomRight, BottomLeft };
 
-  PIPParams()
-      : scaleIndex(1), corner(TopLeft), hOffset(0), vOffset(0), lumma(3) {}
+   PIPParams()
+       : scaleIndex(1), corner(TopLeft), hOffset(0), vOffset(0), lumma(3) {}
 
-  bool isFullScreen() const { return scaleIndex == 5; }
-  float getScaleCoeff() const {
-    if (scaleIndex == 2)
-      return 0.5;
-    else if (scaleIndex == 3)
-      return 0.25;
-    else if (scaleIndex == 4)
-      return 1.5;
-    else
-      return 1.0;
-  }
+   bool isFullScreen() const { return scaleIndex == 5; }
+   float getScaleCoeff() const {
+      if (scaleIndex == 2)
+         return 0.5;
+      else if (scaleIndex == 3)
+         return 0.25;
+      else if (scaleIndex == 4)
+         return 1.5;
+      else
+         return 1.0;
+   }
 
-  int scaleIndex;
-  PipCorner corner;
-  int hOffset;
-  int vOffset;
-  int lumma;
+   int scaleIndex;
+   PipCorner corner;
+   int hOffset;
+   int vOffset;
+   int lumma;
 };
 
 #endif

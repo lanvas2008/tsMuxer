@@ -40,42 +40,42 @@ typedef struct{
 */
 
 struct GUID {
-  uint32_t data1;
-  uint16_t data2;
-  uint16_t data3;
-  uint8_t data4[8];
-  GUID(uint32_t param1, uint16_t param2, uint16_t param3, const char* param4) {
-    data1 = param1;
-    data2 = param2;
-    data3 = param3;
-    memcpy(data4, param4, 8);
-  }
-  bool operator==(const GUID& other) {
-    if (data1 != other.data1 || data2 != other.data2 || data3 != other.data3)
-      return false;
-    for (int i = 0; i < 8; i++)
-      if (data4[i] != other.data4[i]) return false;
-    return true;
-  }
+   uint32_t data1;
+   uint16_t data2;
+   uint16_t data3;
+   uint8_t data4[8];
+   GUID(uint32_t param1, uint16_t param2, uint16_t param3, const char* param4) {
+      data1 = param1;
+      data2 = param2;
+      data3 = param3;
+      memcpy(data4, param4, 8);
+   }
+   bool operator==(const GUID& other) {
+      if (data1 != other.data1 || data2 != other.data2 || data3 != other.data3)
+         return false;
+      for (int i = 0; i < 8; i++)
+         if (data4[i] != other.data4[i]) return false;
+      return true;
+   }
 };
 
 typedef struct {
-  // WAVEFORMATEX  Format;
-  uint16_t wFormatTag;
-  uint16_t nChannels;
-  uint32_t nSamplesPerSec;
-  uint32_t nAvgBytesPerSec;
-  uint16_t nBlockAlign;
-  uint16_t wBitsPerSample;
-  uint16_t cbSize;
+   // WAVEFORMATEX  Format;
+   uint16_t wFormatTag;
+   uint16_t nChannels;
+   uint32_t nSamplesPerSec;
+   uint32_t nAvgBytesPerSec;
+   uint16_t nBlockAlign;
+   uint16_t wBitsPerSample;
+   uint16_t cbSize;
 
-  union {
-    uint16_t wValidBitsPerSample; /* bits of precision */
-    uint16_t wSamplesPerBlock;    /* valid if wBitsPerSample==0 */
-    uint16_t wReserved;           /* If neither applies, set to zero. */
-  } Samples;
-  uint32_t dwChannelMask; /* which channels are present in stream */
-  GUID SubFormat;
+   union {
+      uint16_t wValidBitsPerSample; /* bits of precision */
+      uint16_t wSamplesPerBlock;    /* valid if wBitsPerSample==0 */
+      uint16_t wReserved;           /* If neither applies, set to zero. */
+   } Samples;
+   uint32_t dwChannelMask; /* which channels are present in stream */
+   GUID SubFormat;
 } WAVEFORMATPCMEX;
 
 const uint16_t WAVE_FORMAT_EXTENSIBLE = 0xFFFE;

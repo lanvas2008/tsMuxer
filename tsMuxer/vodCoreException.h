@@ -5,21 +5,21 @@
 #include <string>
 
 class VodCoreException {
- public:
-  VodCoreException(int errCode, const std::string& errStr)
-      : m_errCode(errCode), m_errStr(errStr) {}
-  VodCoreException(int errCode, const char* errStr)
-      : m_errCode(errCode), m_errStr(errStr) {}
-  const int m_errCode;
-  const std::string m_errStr;
+  public:
+   VodCoreException(int errCode, const std::string& errStr)
+       : m_errCode(errCode), m_errStr(errStr) {}
+   VodCoreException(int errCode, const char* errStr)
+       : m_errCode(errCode), m_errStr(errStr) {}
+   const int m_errCode;
+   const std::string m_errStr;
 };
 
-#define THROW(errCode, msg)                    \
-  {                                            \
-    std::ostringstream ss;                     \
-    ss << msg;                                 \
-    throw VodCoreException(errCode, ss.str()); \
-  }
+#define THROW(errCode, msg)                      \
+   {                                             \
+      std::ostringstream ss;                     \
+      ss << msg;                                 \
+      throw VodCoreException(errCode, ss.str()); \
+   }
 
 const static int ERR_INVALID_HANDLE = 1;
 

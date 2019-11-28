@@ -7,14 +7,14 @@
 
 namespace UtfConverter {
 enum SourceFormat {
-  sfUnknown,
-  sfANSI,
-  sfDefault,
-  sfUTF8,
-  sfUTF16le,
-  sfUTF16be,
-  sfUTF32le,
-  sfUTF32be
+   sfUnknown,
+   sfANSI,
+   sfDefault,
+   sfUTF8,
+   sfUTF16le,
+   sfUTF16be,
+   sfUTF32le,
+   sfUTF32be
 };
 
 std::wstring toWideString(uint8_t* start, size_t widesize,

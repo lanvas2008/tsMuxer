@@ -158,281 +158,285 @@ const static pair<const wchar_t*, uint32_t> defaultPallette[] = {
     make_pair(L"yellowgreen", 0x9acd32)};
 
 TextSubtitlesRender::TextSubtitlesRender() : m_width(0), m_height(0) {
-  m_pData = 0;
-  // m_renderedData = 0;
+   m_pData = 0;
+   // m_renderedData = 0;
 }
 
 TextSubtitlesRender::~TextSubtitlesRender() {
-  // delete [] m_renderedData;
+   // delete [] m_renderedData;
 }
 
 wstring findFontArg(const wstring& text, int pos) {
-  bool delFound = false;
-  int firstPos = -1;
-  for (int i = pos; i < text.size(); i++) {
-    if (text[i] == L'=')
-      delFound = true;
-    else if (delFound) {
-      if (text[i] == ' ') {
-        if (firstPos != -1) return text.substr(firstPos, i - firstPos);
-      } else if (firstPos == -1)
-        firstPos = i;
-    }
-  }
-  if (firstPos != -1)
-    return text.substr(firstPos, text.size() - firstPos);
-  else
-    return L"";
+   bool delFound = false;
+   int firstPos = -1;
+   for (int i = pos; i < text.size(); i++) {
+      if (text[i] == L'=')
+         delFound = true;
+      else if (delFound) {
+         if (text[i] == ' ') {
+            if (firstPos != -1) return text.substr(firstPos, i - firstPos);
+         } else if (firstPos == -1)
+            firstPos = i;
+      }
+   }
+   if (firstPos != -1)
+      return text.substr(firstPos, text.size() - firstPos);
+   else
+      return L"";
 }
 
 int TextSubtitlesRender::findUnquotedStrW(const wstring& str,
                                           const wstring& substr) {
-  if (substr.size() == 0) return string::npos;
-  bool quote = false;
-  for (int i = 0; i < str.size(); i++) {
-    if (str[i] == L'\"' || str[i] == L'\'')
-      quote = !quote;
-    else if (!quote && str[i] == substr[0]) {
-      bool found = true;
-      for (int j = 1; j < substr.size(); j++) {
-        if (i + j >= str.size() || str[i + j] != substr[j]) {
-          found = false;
-          break;
-        }
+   if (substr.size() == 0) return string::npos;
+   bool quote = false;
+   for (int i = 0; i < str.size(); i++) {
+      if (str[i] == L'\"' || str[i] == L'\'')
+         quote = !quote;
+      else if (!quote && str[i] == substr[0]) {
+         bool found = true;
+         for (int j = 1; j < substr.size(); j++) {
+            if (i + j >= str.size() || str[i + j] != substr[j]) {
+               found = false;
+               break;
+            }
+         }
+         if (found) return i;
       }
-      if (found) return i;
-    }
-  }
-  return string::npos;
+   }
+   return string::npos;
 }
 
 uint32_t rgbSwap(uint32_t color) {
-  uint8_t* rgb = (uint8_t*)&color;
-  uint8_t tmp = rgb[0];
-  rgb[0] = rgb[2];
-  rgb[2] = tmp;
-  return color;
+   uint8_t* rgb = (uint8_t*)&color;
+   uint8_t tmp = rgb[0];
+   rgb[0] = rgb[2];
+   rgb[2] = tmp;
+   return color;
 }
 
 int TextSubtitlesRender::browserSizeToRealSize(int bSize, double rSize) {
-  if (bSize > DEFAULT_BROWSER_STYLE_FS)
-    for (int i = DEFAULT_BROWSER_STYLE_FS; i < bSize; i++)
-      rSize *= BROWSER_FONT_STYLE_INC_COEFF;
-  else if (bSize < DEFAULT_BROWSER_STYLE_FS)
-    for (int i = bSize; i < DEFAULT_BROWSER_STYLE_FS; i++)
-      rSize /= BROWSER_FONT_STYLE_INC_COEFF;
-  return rSize;
+   if (bSize > DEFAULT_BROWSER_STYLE_FS)
+      for (int i = DEFAULT_BROWSER_STYLE_FS; i < bSize; i++)
+         rSize *= BROWSER_FONT_STYLE_INC_COEFF;
+   else if (bSize < DEFAULT_BROWSER_STYLE_FS)
+      for (int i = bSize; i < DEFAULT_BROWSER_STYLE_FS; i++)
+         rSize /= BROWSER_FONT_STYLE_INC_COEFF;
+   return rSize;
 }
 
 vector<pair<Font, wstring>> TextSubtitlesRender::processTxtLine(
     const std::wstring& line, vector<Font>& fontStack) {
-  if (fontStack.size() == 0) {
-    fontStack.push_back(m_font);
-    fontStack[0].m_size = DEFAULT_BROWSER_STYLE_FS;
-  }
-  Font curFont = fontStack[fontStack.size() - 1];
+   if (fontStack.size() == 0) {
+      fontStack.push_back(m_font);
+      fontStack[0].m_size = DEFAULT_BROWSER_STYLE_FS;
+   }
+   Font curFont = fontStack[fontStack.size() - 1];
 
-  vector<pair<Font, wstring>> rez;
-  int prevTextPos = 0;
-  int bStartPos = -1;
-  for (int i = 0; i < line.size(); i++) {
-    if (line[i] == '<')
-      bStartPos = i;
-    else if (line[i] == '>' && bStartPos != -1) {
-      bool isTag = false;
-      bool endTag = false;
-      wstring tagStr = trimStrW(line.substr(bStartPos + 1, i - bStartPos - 1));
-      wstring ltagStr = tagStr;
-      for (int j = 0; j < ltagStr.size(); j++)
-        ltagStr[j] = towlower(ltagStr[j]);
-      if (ltagStr == L"i" || ltagStr == L"italic") {
-        curFont.m_opts |= Font::ITALIC;
-        isTag = true;
-      } else if (ltagStr == L"/i" || ltagStr == L"/italic") {
-        endTag = true;
-      } else if (ltagStr == L"b" || ltagStr == L"bold") {
-        curFont.m_opts |= Font::BOLD;
-        isTag = true;
-      } else if (ltagStr == L"/b" || ltagStr == L"/bold") {
-        endTag = true;
-      } else if (ltagStr == L"u" || ltagStr == L"underline") {
-        curFont.m_opts |= Font::UNDERLINE;
-        isTag = true;
-      } else if (ltagStr == L"/u" || ltagStr == L"underline") {
-        endTag = true;
-      } else if (ltagStr == L"f" || ltagStr == L"force") {
-        curFont.m_opts |= Font::FORCED;
-        isTag = true;
-      } else if (ltagStr == L"/f" || ltagStr == L"/force") {
-        endTag = true;
-      } else if (ltagStr == L"strike") {
-        curFont.m_opts |= Font::STRIKE_OUT;
-        isTag = true;
-      } else if (ltagStr == L"/strike") {
-        endTag = true;
-      } else if (strStartWithW(ltagStr, L"font ")) {
-        int fontNamePos =
-            findUnquotedStrW(ltagStr, L"name");  // ltagStr.find(L"name");
-        if (fontNamePos == string::npos)
-          fontNamePos = findUnquotedStrW(ltagStr, L"face");
-        if (fontNamePos != string::npos)
-          curFont.m_name =
-              unquoteStrW(findFontArg(tagStr, fontNamePos /*, lastIndexPos*/));
+   vector<pair<Font, wstring>> rez;
+   int prevTextPos = 0;
+   int bStartPos = -1;
+   for (int i = 0; i < line.size(); i++) {
+      if (line[i] == '<')
+         bStartPos = i;
+      else if (line[i] == '>' && bStartPos != -1) {
+         bool isTag = false;
+         bool endTag = false;
+         wstring tagStr =
+             trimStrW(line.substr(bStartPos + 1, i - bStartPos - 1));
+         wstring ltagStr = tagStr;
+         for (int j = 0; j < ltagStr.size(); j++)
+            ltagStr[j] = towlower(ltagStr[j]);
+         if (ltagStr == L"i" || ltagStr == L"italic") {
+            curFont.m_opts |= Font::ITALIC;
+            isTag = true;
+         } else if (ltagStr == L"/i" || ltagStr == L"/italic") {
+            endTag = true;
+         } else if (ltagStr == L"b" || ltagStr == L"bold") {
+            curFont.m_opts |= Font::BOLD;
+            isTag = true;
+         } else if (ltagStr == L"/b" || ltagStr == L"/bold") {
+            endTag = true;
+         } else if (ltagStr == L"u" || ltagStr == L"underline") {
+            curFont.m_opts |= Font::UNDERLINE;
+            isTag = true;
+         } else if (ltagStr == L"/u" || ltagStr == L"underline") {
+            endTag = true;
+         } else if (ltagStr == L"f" || ltagStr == L"force") {
+            curFont.m_opts |= Font::FORCED;
+            isTag = true;
+         } else if (ltagStr == L"/f" || ltagStr == L"/force") {
+            endTag = true;
+         } else if (ltagStr == L"strike") {
+            curFont.m_opts |= Font::STRIKE_OUT;
+            isTag = true;
+         } else if (ltagStr == L"/strike") {
+            endTag = true;
+         } else if (strStartWithW(ltagStr, L"font ")) {
+            int fontNamePos =
+                findUnquotedStrW(ltagStr, L"name");  // ltagStr.find(L"name");
+            if (fontNamePos == string::npos)
+               fontNamePos = findUnquotedStrW(ltagStr, L"face");
+            if (fontNamePos != string::npos)
+               curFont.m_name = unquoteStrW(
+                   findFontArg(tagStr, fontNamePos /*, lastIndexPos*/));
 
-        int colorPos = findUnquotedStrW(ltagStr, L"color");
-        if (colorPos != string::npos) {
-          wstring arg = unquoteStrW(findFontArg(ltagStr, colorPos));
-          bool defClrFound = false;
-          for (int j = 0; j < sizeof(defaultPallette) /
-                                  sizeof(pair<const wchar_t*, uint32_t>);
-               j++) {
-            if (defaultPallette[j].first == arg) {
-              curFont.m_color = defaultPallette[j].second;
-              defClrFound = true;
-              break;
+            int colorPos = findUnquotedStrW(ltagStr, L"color");
+            if (colorPos != string::npos) {
+               wstring arg = unquoteStrW(findFontArg(ltagStr, colorPos));
+               bool defClrFound = false;
+               for (int j = 0; j < sizeof(defaultPallette) /
+                                       sizeof(pair<const wchar_t*, uint32_t>);
+                    j++) {
+                  if (defaultPallette[j].first == arg) {
+                     curFont.m_color = defaultPallette[j].second;
+                     defClrFound = true;
+                     break;
+                  }
+               }
+               if (!defClrFound) {
+                  if (arg.size() > 0 && (arg[0] == L'#' || arg[0] == L'x'))
+                     curFont.m_color =
+                         strWToInt32u(arg.substr(1, 16384).c_str(), 16);
+                  else if (arg.size() > 1 && (arg[0] == L'0' || arg[1] == L'x'))
+                     curFont.m_color =
+                         strWToInt32u(arg.substr(2, 16384).c_str(), 16);
+                  else
+                     curFont.m_color = strWToInt32u(arg.c_str(), 10);
+               }
+               if ((curFont.m_color & 0xff000000u) == 0)
+                  curFont.m_color |= 0xff000000u;
             }
-          }
-          if (!defClrFound) {
-            if (arg.size() > 0 && (arg[0] == L'#' || arg[0] == L'x'))
-              curFont.m_color = strWToInt32u(arg.substr(1, 16384).c_str(), 16);
-            else if (arg.size() > 1 && (arg[0] == L'0' || arg[1] == L'x'))
-              curFont.m_color = strWToInt32u(arg.substr(2, 16384).c_str(), 16);
-            else
-              curFont.m_color = strWToInt32u(arg.c_str(), 10);
-          }
-          if ((curFont.m_color & 0xff000000u) == 0)
-            curFont.m_color |= 0xff000000u;
-        }
-        int fontSizePos = findUnquotedStrW(ltagStr, L"size");
-        if (fontSizePos != string::npos) {
-          wstring arg = unquoteStrW(findFontArg(tagStr, fontSizePos));
-          if (arg.size() > 0) {
-            if (arg[0] == '+' || arg[0] == '-')
-              curFont.m_size += strWToInt32(arg.c_str(), 10);
-            else
-              curFont.m_size = strWToInt32u(arg.c_str(), 10);
-          }
-        }
-        isTag = true;
-      } else if (strStartWithW(tagStr, L"/font")) {
-        endTag = true;
+            int fontSizePos = findUnquotedStrW(ltagStr, L"size");
+            if (fontSizePos != string::npos) {
+               wstring arg = unquoteStrW(findFontArg(tagStr, fontSizePos));
+               if (arg.size() > 0) {
+                  if (arg[0] == '+' || arg[0] == '-')
+                     curFont.m_size += strWToInt32(arg.c_str(), 10);
+                  else
+                     curFont.m_size = strWToInt32u(arg.c_str(), 10);
+               }
+            }
+            isTag = true;
+         } else if (strStartWithW(tagStr, L"/font")) {
+            endTag = true;
+         }
+         if (isTag || endTag) {
+            if (bStartPos > prevTextPos) {
+               wstring msg = line.substr(prevTextPos, bStartPos - prevTextPos);
+               rez.push_back(make_pair(fontStack[fontStack.size() - 1], msg));
+            }
+            if (isTag)
+               fontStack.push_back(curFont);
+            else if (fontStack.size() > 1) {
+               fontStack.resize(fontStack.size() - 1);
+               curFont = fontStack[fontStack.size() - 1];
+            }
+            prevTextPos = i + 1;
+         }
+         bStartPos = -1;
       }
-      if (isTag || endTag) {
-        if (bStartPos > prevTextPos) {
-          wstring msg = line.substr(prevTextPos, bStartPos - prevTextPos);
-          rez.push_back(make_pair(fontStack[fontStack.size() - 1], msg));
-        }
-        if (isTag)
-          fontStack.push_back(curFont);
-        else if (fontStack.size() > 1) {
-          fontStack.resize(fontStack.size() - 1);
-          curFont = fontStack[fontStack.size() - 1];
-        }
-        prevTextPos = i + 1;
-      }
-      bStartPos = -1;
-    }
-  }
-  if (line.size() > prevTextPos)
-    rez.push_back(make_pair(
-        curFont, line.substr(prevTextPos, line.size() - prevTextPos)));
-  double rSize = m_initFont.m_size;
-  for (int i = 0; i < rez.size(); i++)
-    rez[i].first.m_size = browserSizeToRealSize(rez[i].first.m_size, rSize);
-  return rez;
+   }
+   if (line.size() > prevTextPos)
+      rez.push_back(make_pair(
+          curFont, line.substr(prevTextPos, line.size() - prevTextPos)));
+   double rSize = m_initFont.m_size;
+   for (int i = 0; i < rez.size(); i++)
+      rez[i].first.m_size = browserSizeToRealSize(rez[i].first.m_size, rSize);
+   return rez;
 }
 
 bool TextSubtitlesRender::rasterText(const std::wstring& text) {
-  bool forced = false;
-  memset(m_pData, 0, m_width * m_height * 4);
-  vector<Font> fontStack;
-  vector<wstring> lines = splitStrW(text.c_str(), '\n');
-  int curY = 0;
-  m_initFont = m_font;
-  for (int i = 0; i < lines.size(); ++i) {
-    vector<pair<Font, wstring>> txtParts = processTxtLine(lines[i], fontStack);
-    for (int i = 0; i < txtParts.size(); ++i) {
-      if (txtParts[i].first.m_opts & Font::FORCED) forced = true;
-    }
+   bool forced = false;
+   memset(m_pData, 0, m_width * m_height * 4);
+   vector<Font> fontStack;
+   vector<wstring> lines = splitStrW(text.c_str(), '\n');
+   int curY = 0;
+   m_initFont = m_font;
+   for (int i = 0; i < lines.size(); ++i) {
+      vector<pair<Font, wstring>> txtParts =
+          processTxtLine(lines[i], fontStack);
+      for (int i = 0; i < txtParts.size(); ++i) {
+         if (txtParts[i].first.m_opts & Font::FORCED) forced = true;
+      }
 
-    int ySize = 0;
-    int tWidth = 0;
-    int maxHeight = 0;
-    int maxBaseLine = 0;
-    vector<int> xSize;
-    for (int j = 0; j < txtParts.size(); j++) {
-      setFont(txtParts[j].first);
-      SIZE mSize;
-      getTextSize(txtParts[j].second, &mSize);
-      ySize = FFMAX(ySize, mSize.cy);
-      maxHeight = FFMAX(maxHeight, getLineSpacing());
-      maxBaseLine = FFMAX(maxBaseLine, getBaseline());
-      xSize.push_back(mSize.cx);
-      tWidth += mSize.cx;
-    }
-    int xOffs = (m_width - tWidth) / 2;
-    int curX = 0;
-    for (int j = 0; j < txtParts.size(); j++) {
-      Font font(txtParts[j].first);
-      setFont(font);
+      int ySize = 0;
+      int tWidth = 0;
+      int maxHeight = 0;
+      int maxBaseLine = 0;
+      vector<int> xSize;
+      for (int j = 0; j < txtParts.size(); j++) {
+         setFont(txtParts[j].first);
+         SIZE mSize;
+         getTextSize(txtParts[j].second, &mSize);
+         ySize = FFMAX(ySize, mSize.cy);
+         maxHeight = FFMAX(maxHeight, getLineSpacing());
+         maxBaseLine = FFMAX(maxBaseLine, getBaseline());
+         xSize.push_back(mSize.cx);
+         tWidth += mSize.cx;
+      }
+      int xOffs = (m_width - tWidth) / 2;
+      int curX = 0;
+      for (int j = 0; j < txtParts.size(); j++) {
+         Font font(txtParts[j].first);
+         setFont(font);
 
-      RECT rect = {
-          curX + xOffs,
-          curY + (maxHeight - getLineSpacing()) - (maxBaseLine - getBaseline()),
-          m_width, m_height};
-      drawText(txtParts[j].second, &rect);
+         RECT rect = {curX + xOffs,
+                      curY + (maxHeight - getLineSpacing()) -
+                          (maxBaseLine - getBaseline()),
+                      m_width, m_height};
+         drawText(txtParts[j].second, &rect);
 
-      curX += xSize[j];
-    }
-    curY += ySize * m_font.m_lineSpacing;
-  }
-  flushRasterBuffer();
-  // if (!isOutlineSupported())
-  //    addBorder(m_font.m_borderWidth, m_pData, m_width, m_height);
-  m_font = m_initFont;
+         curX += xSize[j];
+      }
+      curY += ySize * m_font.m_lineSpacing;
+   }
+   flushRasterBuffer();
+   // if (!isOutlineSupported())
+   //    addBorder(m_font.m_borderWidth, m_pData, m_width, m_height);
+   m_font = m_initFont;
 
-  return forced;
+   return forced;
 }
 
 const static uint32_t BORDER_COLOR = 0xff020202;
 const static uint32_t BORDER_COLOR_TMP = RGB(0x1, 0x1, 0x1);
 
 inline void setBPoint(uint32_t* addr) {
-  if (*addr == 0) *addr = BORDER_COLOR_TMP;
+   if (*addr == 0) *addr = BORDER_COLOR_TMP;
 }
 
 void TextSubtitlesRender::addBorder(int borderWidth, uint8_t* data, int width,
                                     int height) {
-  // add black border
-  for (int i = 0; i < borderWidth; ++i) {
-    uint32_t* dst = (uint32_t*)data;
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        if (*dst != 0 && *dst != BORDER_COLOR_TMP) {
-          if (x > 0) {
-            setBPoint(dst - 1);
-            if (y > 0) setBPoint(dst - 1 - width);
-            if (y < height - 1) setBPoint(dst - 1 + width);
-          }
-          if (y > 0) setBPoint(dst - width);
-          if (y < height - 1) setBPoint(dst + width);
-          if (x < width - 1) {
-            setBPoint(dst + 1);
-            if (y > 0) setBPoint(dst + 1 - width);
-            if (y < height - 1) setBPoint(dst + 1 + width);
-          }
-        }
-        dst++;
+   // add black border
+   for (int i = 0; i < borderWidth; ++i) {
+      uint32_t* dst = (uint32_t*)data;
+      for (int y = 0; y < height; ++y) {
+         for (int x = 0; x < width; ++x) {
+            if (*dst != 0 && *dst != BORDER_COLOR_TMP) {
+               if (x > 0) {
+                  setBPoint(dst - 1);
+                  if (y > 0) setBPoint(dst - 1 - width);
+                  if (y < height - 1) setBPoint(dst - 1 + width);
+               }
+               if (y > 0) setBPoint(dst - width);
+               if (y < height - 1) setBPoint(dst + width);
+               if (x < width - 1) {
+                  setBPoint(dst + 1);
+                  if (y > 0) setBPoint(dst + 1 - width);
+                  if (y < height - 1) setBPoint(dst + 1 + width);
+               }
+            }
+            dst++;
+         }
       }
-    }
-    dst = (uint32_t*)data;
-    for (int y = 0; y < height; ++y)
-      for (int x = 0; x < width; ++x) {
-        if (*dst == BORDER_COLOR_TMP) *dst = BORDER_COLOR;
-        dst++;
-      }
-  }
-  return;
+      dst = (uint32_t*)data;
+      for (int y = 0; y < height; ++y)
+         for (int x = 0; x < width; ++x) {
+            if (*dst == BORDER_COLOR_TMP) *dst = BORDER_COLOR;
+            dst++;
+         }
+   }
+   return;
 }
 
 }  // namespace text_subtitles

@@ -90,17 +90,17 @@ enum CaseType { ctLower = 0, ctUpper };
 
 template <typename Type>
 class CaseChanger {
- public:
-  CaseChanger(CaseType caseType = ctLower) : m_case(caseType) {}
+  public:
+   CaseChanger(CaseType caseType = ctLower) : m_case(caseType) {}
 
-  int operator()(Type& elem) const { return 0; }
+   int operator()(Type& elem) const { return 0; }
 
-  int operator()(char& elem) const {
-    return m_case == ctLower ? tolower(elem) : toupper(elem);
-  }
+   int operator()(char& elem) const {
+      return m_case == ctLower ? tolower(elem) : toupper(elem);
+   }
 
- private:
-  CaseType m_case;
+  private:
+   CaseType m_case;
 };
 
 typedef uint16_t ip_port_t;
@@ -115,8 +115,8 @@ uint64_t roundUp64(const uint64_t& value, const uint64_t& roundVal);
 uint32_t random32();
 
 static uint32_t FOUR_CC(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
-  return my_ntohl((uint32_t(a) << 24) + (uint32_t(b) << 16) +
-                  (uint32_t(c) << 8) + uint32_t(d));
+   return my_ntohl((uint32_t(a) << 24) + (uint32_t(b) << 16) +
+                   (uint32_t(c) << 8) + uint32_t(d));
 }
 
 #endif  //__T_TYPES_H

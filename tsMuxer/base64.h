@@ -6,10 +6,10 @@
 #include <string>
 
 class Base64 {
- public:
-  static std::string encode(uint8_t const* buffer, unsigned int len);
-  static void decode(std::string const& encoded_string, char* buff, int bufLen,
-                     int& decodedLen);
+  public:
+   static std::string encode(uint8_t const* buffer, unsigned int len);
+   static void decode(std::string const& encoded_string, char* buff, int bufLen,
+                      int& decodedLen);
 };
 
 #endif

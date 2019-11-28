@@ -3,3 +3,6 @@
 BasedOnStyle: Google
 # This defaults to 'Auto'
 Standard: Cpp11
+IndentWidth: '3'
+TabWidth: '3'
+UseTab: Never

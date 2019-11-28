@@ -149,16 +149,16 @@ const static uint8_t MATROSKA_ID_BLOCKDURATION = 0x9B;
 const static uint8_t MATROSKA_ID_BLOCKREFERENCE = 0xFB;
 
 typedef enum {
-  MATROSKA_EYE_MODE_MONO = 0x0,
-  MATROSKA_EYE_MODE_RIGHT = 0x1,
-  MATROSKA_EYE_MODE_LEFT = 0x2,
-  MATROSKA_EYE_MODE_BOTH = 0x3,
+   MATROSKA_EYE_MODE_MONO = 0x0,
+   MATROSKA_EYE_MODE_RIGHT = 0x1,
+   MATROSKA_EYE_MODE_LEFT = 0x2,
+   MATROSKA_EYE_MODE_BOTH = 0x3,
 } MatroskaEyeMode;
 
 typedef enum {
-  MATROSKA_ASPECT_RATIO_MODE_FREE = 0x0,
-  MATROSKA_ASPECT_RATIO_MODE_KEEP = 0x1,
-  MATROSKA_ASPECT_RATIO_MODE_FIXED = 0x2,
+   MATROSKA_ASPECT_RATIO_MODE_FREE = 0x0,
+   MATROSKA_ASPECT_RATIO_MODE_KEEP = 0x1,
+   MATROSKA_ASPECT_RATIO_MODE_FIXED = 0x2,
 } MatroskaAspectRatioMode;
 
 /*
@@ -167,15 +167,15 @@ typedef enum {
  */
 
 typedef enum {
-  MATROSKA_TRACK_ENABLED = (1 << 0),
-  MATROSKA_TRACK_DEFAULT = (1 << 1),
-  MATROSKA_TRACK_LACING = (1 << 2),
-  MATROSKA_TRACK_REAL_V = (1 << 4),
-  MATROSKA_TRACK_SHIFT = (1 << 16)
+   MATROSKA_TRACK_ENABLED = (1 << 0),
+   MATROSKA_TRACK_DEFAULT = (1 << 1),
+   MATROSKA_TRACK_LACING = (1 << 2),
+   MATROSKA_TRACK_REAL_V = (1 << 4),
+   MATROSKA_TRACK_SHIFT = (1 << 16)
 } MatroskaTrackFlags;
 
 typedef enum {
-  MATROSKA_VIDEOTRACK_INTERLACED = (MATROSKA_TRACK_SHIFT << 0)
+   MATROSKA_VIDEOTRACK_INTERLACED = (MATROSKA_TRACK_SHIFT << 0)
 } MatroskaVideoTrackFlags;
 
 /*
@@ -183,9 +183,9 @@ typedef enum {
  */
 
 struct CodecTags {
-  const char* str;
-  // enum CodecID id;
-  int id;
+   const char* str;
+   // enum CodecID id;
+   int id;
 };
 
 #define MATROSKA_CODEC_ID_HEVC_FOURCC "V_MPEGH/ISO/HEVC"
@@ -206,135 +206,135 @@ struct CodecTags {
 // extern CodecTags ff_mkv_codec_tags[];
 
 class ParsedH264TrackData : public ParsedTrackPrivData {
- public:
-  ParsedH264TrackData(uint8_t* buff, int size);
-  virtual ~ParsedH264TrackData() {}
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+  public:
+   ParsedH264TrackData(uint8_t* buff, int size);
+   virtual ~ParsedH264TrackData() {}
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
 
- protected:
-  int m_nalSize;
-  bool m_firstExtract;
+  protected:
+   int m_nalSize;
+   bool m_firstExtract;
 
-  std::vector<std::vector<uint8_t>> m_spsPpsList;
-  void writeNalHeader(uint8_t*& dst);
-  int getSPSPPSLen();
-  int writeSPSPPS(uint8_t* dst);
-  virtual bool spsppsExists(uint8_t* buff, int size);
+   std::vector<std::vector<uint8_t>> m_spsPpsList;
+   void writeNalHeader(uint8_t*& dst);
+   int getSPSPPSLen();
+   int writeSPSPPS(uint8_t* dst);
+   virtual bool spsppsExists(uint8_t* buff, int size);
 };
 
 class ParsedH265TrackData : public ParsedH264TrackData {
- public:
-  ParsedH265TrackData(uint8_t* buff, int size);
-  virtual ~ParsedH265TrackData() {}
+  public:
+   ParsedH265TrackData(uint8_t* buff, int size);
+   virtual ~ParsedH265TrackData() {}
 
-  virtual bool spsppsExists(uint8_t* buff, int size) override;
+   virtual bool spsppsExists(uint8_t* buff, int size) override;
 };
 
 class ParsedAC3TrackData : public ParsedTrackPrivData {
- public:
-  ParsedAC3TrackData(uint8_t* buff, int size);
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
-  virtual ~ParsedAC3TrackData() {}
+  public:
+   ParsedAC3TrackData(uint8_t* buff, int size);
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+   virtual ~ParsedAC3TrackData() {}
 
- private:
-  bool m_firstPacket;
-  bool m_shortHeaderMode;
+  private:
+   bool m_firstPacket;
+   bool m_shortHeaderMode;
 };
 
 class ParsedAACTrackData : public ParsedTrackPrivData {
- public:
-  ParsedAACTrackData(uint8_t* buff, int size);
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
-  virtual ~ParsedAACTrackData() {}
+  public:
+   ParsedAACTrackData(uint8_t* buff, int size);
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+   virtual ~ParsedAACTrackData() {}
 
- private:
-  AACCodec m_aacRaw;
+  private:
+   AACCodec m_aacRaw;
 };
 
 class ParsedLPCMTrackData : public ParsedTrackPrivData {
- public:
-  ParsedLPCMTrackData(MatroskaTrack* track);
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
-  virtual ~ParsedLPCMTrackData() {}
+  public:
+   ParsedLPCMTrackData(MatroskaTrack* track);
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+   virtual ~ParsedLPCMTrackData() {}
 
- private:
-  bool m_convertBytes;
-  int m_bitdepth;
-  int m_channels;
-  MemoryBlock m_waveBuffer;
+  private:
+   bool m_convertBytes;
+   int m_bitdepth;
+   int m_channels;
+   MemoryBlock m_waveBuffer;
 };
 
 class ParsedSRTTrackData : public ParsedTrackPrivData {
- public:
-  ParsedSRTTrackData(uint8_t* buff, int size);
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
-  virtual ~ParsedSRTTrackData() {}
+  public:
+   ParsedSRTTrackData(uint8_t* buff, int size);
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+   virtual ~ParsedSRTTrackData() {}
 
- private:
-  int m_packetCnt;
+  private:
+   int m_packetCnt;
 };
 
 class ParsedVC1TrackData : public ParsedTrackPrivData {
- public:
-  ParsedVC1TrackData(uint8_t* buff, int size);
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
-  virtual ~ParsedVC1TrackData() {}
+  public:
+   ParsedVC1TrackData(uint8_t* buff, int size);
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+   virtual ~ParsedVC1TrackData() {}
 
- private:
-  std::vector<uint8_t> m_seqHeader;
-  bool m_firstPacket;
+  private:
+   std::vector<uint8_t> m_seqHeader;
+   bool m_firstPacket;
 };
 
 class ParsedPGTrackData : public ParsedTrackPrivData {
- public:
-  ParsedPGTrackData() {}
-  virtual ~ParsedPGTrackData() {}
-  virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
+  public:
+   ParsedPGTrackData() {}
+   virtual ~ParsedPGTrackData() {}
+   virtual void extractData(AVPacket* pkt, uint8_t* buff, int size);
 
- private:
+  private:
 };
 
 typedef struct MatroskaVideoTrack {
-  MatroskaTrack track;
+   MatroskaTrack track;
 
-  int pixel_width;
-  int pixel_height;
-  int display_width;
-  int display_height;
+   int pixel_width;
+   int pixel_height;
+   int display_width;
+   int display_height;
 
-  uint32_t fourcc;
+   uint32_t fourcc;
 
-  MatroskaAspectRatioMode ar_mode;
-  MatroskaEyeMode eye_mode;
+   MatroskaAspectRatioMode ar_mode;
+   MatroskaEyeMode eye_mode;
 
-  //..
+   //..
 } MatroskaVideoTrack;
 
 typedef struct MatroskaAudioTrack {
-  MatroskaTrack track;
+   MatroskaTrack track;
 
-  int channels;
-  int bitdepth;
-  int internal_samplerate;
-  int samplerate;
-  int block_align;
+   int channels;
+   int bitdepth;
+   int internal_samplerate;
+   int samplerate;
+   int block_align;
 
-  /* real audio header */
-  int coded_framesize;
-  int sub_packet_h;
-  int frame_size;
-  int sub_packet_size;
-  int sub_packet_cnt;
-  int pkt_cnt;
-  uint8_t* buf;
-  //..
+   /* real audio header */
+   int coded_framesize;
+   int sub_packet_h;
+   int frame_size;
+   int sub_packet_size;
+   int sub_packet_cnt;
+   int pkt_cnt;
+   uint8_t* buf;
+   //..
 } MatroskaAudioTrack;
 
 typedef struct MatroskaSubtitleTrack {
-  MatroskaTrack track;
+   MatroskaTrack track;
 
-  int ass;
-  //..
+   int ass;
+   //..
 } MatroskaSubtitleTrack;
 
 #endif  // MATROSKA_PARSER_H
