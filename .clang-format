@@ -1,0 +1,5 @@
+# Defines the Google style for automatic reformatting
+# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: Google
+# This defaults to 'Auto'
+Standard: Cpp11

@@ -44,8 +44,7 @@ void MuxForm::addStdOutLine(const QString &line) {
 }
 
 void MuxForm::addStdErrLine(const QString &line) {
-  if (errCnt >= MAX_ERRORS_CNT)
-    return;
+  if (errCnt >= MAX_ERRORS_CNT) return;
   ui.stderrText->append(line);
   errCnt = ui.stderrText->document()->blockCount();
   if (errCnt >= MAX_ERRORS_CNT) {
@@ -73,8 +72,7 @@ void MuxForm::muxFinished(int exitCode, const QString &prefix) {
 }
 
 void MuxForm::onAbort() {
-  if (muxProcess == nullptr)
-    return;
+  if (muxProcess == nullptr) return;
   ui.abortBtn->setEnabled(false);
   ui.okBtn->setEnabled(true);
   setWindowTitle("terminating tsMuxeR...");

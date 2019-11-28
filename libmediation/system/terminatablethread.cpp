@@ -2,9 +2,7 @@
 
 #include <cassert>
 
-TerminatableThread::~TerminatableThread() {
-  join();
-}
+TerminatableThread::~TerminatableThread() { join(); }
 
 void TerminatableThread::run(TerminatableThread *const t) {
   assert(t->m_thread.get_id() == std::thread::id() &&

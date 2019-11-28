@@ -2,12 +2,13 @@
 #define MUX_FORM_H_
 
 #include <QtGui>
+
 #include "ui_muxForm.h"
 
-class MuxForm: public QDialog//QWidget
+class MuxForm : public QDialog  // QWidget
 {
-    Q_OBJECT
-public:
+  Q_OBJECT
+ public:
   explicit MuxForm(QWidget* parent);
   void prepare(const QString& label);
   void setProgress(int value);
@@ -15,12 +16,14 @@ public:
   void addStdErrLine(const QString& line);
   void muxFinished(int exitCode, const QString& prefix);
   void setProcess(QProcess* proc);
-protected:
-  virtual void closeEvent (QCloseEvent * event );
-private slots:
+
+ protected:
+  virtual void closeEvent(QCloseEvent* event);
+ private slots:
   void onProgressChanged();
   void onAbort();
-private:
+
+ private:
   int errCnt;
   Ui_muxForm ui;
   QProcess* muxProcess;

@@ -10,7 +10,6 @@ int main(int argc, char *argv[]) {
   QList<QUrl> files;
   for (int i = 1; i < argc; ++i)
     files << QUrl::fromLocalFile(QString::fromLocal8Bit(argv[i]));
-  if (!files.isEmpty())
-    win.addFiles(files);
+  if (!files.isEmpty()) win.addFiles(files);
   return app.exec();
 }

@@ -1,11 +1,13 @@
 #include "tsmuxerwindow.h"
-#include "lang_codes.h"
+
 #include <QApplication>
 #include <QColorDialog>
 #include <QFontDialog>
 #include <QMessageBox>
 #include <QSettings>
 #include <QUrl>
+
+#include "lang_codes.h"
 
 #ifdef WIN32
 #include "windows.h"
@@ -59,8 +61,7 @@ bool doubleCompare(double a, double b) { return qAbs(a - b) < 1e-6; }
 QLocale locale;
 
 QString closeDirPath(const QString &src) {
-  if (src.isEmpty())
-    return src;
+  if (src.isEmpty()) return src;
   if (src[src.length() - 1] == L'/' || src[src.length() - 1] == L'\\')
     return src;
   return src + QDir::separator();
@@ -68,8 +69,7 @@ QString closeDirPath(const QString &src) {
 
 QString unquoteStr(QString val) {
   val = val.trimmed();
-  if (val.isEmpty())
-    return val;
+  if (val.isEmpty()) return val;
   if (val.at(0) == '\"') {
     if (val.right(1) == "\"")
       return val.mid(1, val.length() - 2);
@@ -124,18 +124,14 @@ int qTimeToMsec(const QTime &time) {
 }
 
 double timeToFloat(const QString &chapterStr) {
-  if (chapterStr.size() == 0)
-    return 0;
+  if (chapterStr.size() == 0) return 0;
   QStringList timeParts = chapterStr.split(':');
   double sec = 0;
-  if (timeParts.size() > 0)
-    sec = timeParts[timeParts.size() - 1].toDouble();
+  if (timeParts.size() > 0) sec = timeParts[timeParts.size() - 1].toDouble();
   int min = 0;
-  if (timeParts.size() > 1)
-    min = timeParts[timeParts.size() - 2].toInt();
+  if (timeParts.size() > 1) min = timeParts[timeParts.size() - 2].toInt();
   int hour = 0;
-  if (timeParts.size() > 2)
-    hour = timeParts[timeParts.size() - 3].toInt();
+  if (timeParts.size() > 2) hour = timeParts[timeParts.size() - 3].toInt();
   return hour * 3600 + min * 60 + sec;
 }
 
@@ -150,30 +146,26 @@ QString changeFileExt(const QString &value, const QString &newExt) {
 
 QString toFixedDecPoint(QString str) {
   for (int i = 0; i < str.length(); ++i)
-    if (str[i] == ',')
-      str[i] = '.';
+    if (str[i] == ',') str[i] = '.';
   return str;
 }
 
 QString toNativeDecPoint(QString str) {
   for (int i = 0; i < str.length(); ++i)
-    if (str[i] == ',' || str[i] == '.')
-      str[i] = locale.decimalPoint();
+    if (str[i] == ',' || str[i] == '.') str[i] = locale.decimalPoint();
   return str;
 }
 
 float myStrToFloat(QString str) {
   for (int i = 0; i < str.length(); ++i)
-    if (str[i] == ',' || str[i] == '.')
-      str[i] = locale.decimalPoint();
+    if (str[i] == ',' || str[i] == '.') str[i] = locale.decimalPoint();
   return str.toFloat();
 }
 
 QString myFloatToStr(float val) {
   QString str = QString::number(double(val));
   for (int i = 0; i < str.length(); ++i)
-    if (str[i] == locale.decimalPoint())
-      str[i] = '.';
+    if (str[i] == locale.decimalPoint()) str[i] = '.';
   return str;
 }
 
@@ -191,8 +183,7 @@ QString fpsTextToFpsStr(const QString &fpsText) {
 float extractFloatFromDescr(const QString &str, const QString &pattern) {
   try {
     int p = 0;
-    if (!pattern.isEmpty())
-      p = str.indexOf(pattern);
+    if (!pattern.isEmpty()) p = str.indexOf(pattern);
     if (p >= 0) {
       p += pattern.length();
       int p2 = p;
@@ -210,14 +201,12 @@ float extractFloatFromDescr(const QString &str, const QString &pattern) {
 
 QString quoteStr(const QString &val) {
   QString rez;
-  if (val.isEmpty())
-    return "";
+  if (val.isEmpty()) return "";
   if (val.at(0) != '\"')
     rez = '\"' + val;
   else
     rez = val;
-  if (val.at(val.length() - 1) != '\"')
-    rez += '\"';
+  if (val.at(val.length() - 1) != '\"') rez += '\"';
   return rez;
 }
 
@@ -227,7 +216,8 @@ QString myUnquoteStr(const QString &val) { return unquoteStr(val); }
 // QnCheckBoxedHeaderView
 // -------------------------------------------------------------------------- //
 QnCheckBoxedHeaderView::QnCheckBoxedHeaderView(QWidget *parent)
-    : base_type(Qt::Horizontal, parent), m_checkState(Qt::Unchecked),
+    : base_type(Qt::Horizontal, parent),
+      m_checkState(Qt::Unchecked),
       m_checkColumnIndex(0) {
   connect(this, SIGNAL(sectionClicked(int)), this,
           SLOT(at_sectionClicked(int)));
@@ -238,8 +228,7 @@ Qt::CheckState QnCheckBoxedHeaderView::checkState() const {
 }
 
 void QnCheckBoxedHeaderView::setCheckState(Qt::CheckState state) {
-  if (state == m_checkState)
-    return;
+  if (state == m_checkState) return;
   m_checkState = state;
   emit checkStateChanged(state);
 
@@ -257,28 +246,24 @@ void QnCheckBoxedHeaderView::paintSection(QPainter *painter, const QRect &rect,
   painter->restore();
 
   if (logicalIndex == m_checkColumnIndex) {
-
-    if (!rect.isValid())
-      return;
+    if (!rect.isValid()) return;
     QStyleOptionButton opt;
     opt.initFrom(this);
 
     QStyle::State state = QStyle::State_Raised;
-    if (isEnabled())
-      state |= QStyle::State_Enabled;
-    if (window()->isActiveWindow())
-      state |= QStyle::State_Active;
+    if (isEnabled()) state |= QStyle::State_Enabled;
+    if (window()->isActiveWindow()) state |= QStyle::State_Active;
 
     switch (m_checkState) {
-    case Qt::Checked:
-      state |= QStyle::State_On;
-      break;
-    case Qt::Unchecked:
-      state |= QStyle::State_Off;
-      break;
-    default:
-      state |= QStyle::State_NoChange;
-      break;
+      case Qt::Checked:
+        state |= QStyle::State_On;
+        break;
+      case Qt::Unchecked:
+        state |= QStyle::State_Off;
+        break;
+      default:
+        state |= QStyle::State_NoChange;
+        break;
     }
 
     opt.rect = rect.adjusted(4, 0, 0, 0);
@@ -293,15 +278,13 @@ void QnCheckBoxedHeaderView::paintSection(QPainter *painter, const QRect &rect,
 
 QSize QnCheckBoxedHeaderView::sectionSizeFromContents(int logicalIndex) const {
   QSize size = base_type::sectionSizeFromContents(logicalIndex);
-  if (logicalIndex != m_checkColumnIndex)
-    return size;
+  if (logicalIndex != m_checkColumnIndex) return size;
   size.setWidth(15);
   return size;
 }
 
 void QnCheckBoxedHeaderView::at_sectionClicked(int logicalIndex) {
-  if (logicalIndex != m_checkColumnIndex)
-    return;
+  if (logicalIndex != m_checkColumnIndex) return;
   if (m_checkState != Qt::Checked)
     setCheckState(Qt::Checked);
   else
@@ -334,9 +317,14 @@ QString TsMuxerWindow::getDefaultOutputFileName() const {
 }
 
 TsMuxerWindow::TsMuxerWindow()
-    : disableUpdatesCnt(0), outFileNameModified(false),
-      outFileNameDisableChange(false), muxForm(this), tempSoundFile(0),
-      sound(0), m_updateMeta(true), m_3dMode(false) {
+    : disableUpdatesCnt(0),
+      outFileNameModified(false),
+      outFileNameDisableChange(false),
+      muxForm(this),
+      tempSoundFile(0),
+      sound(0),
+      m_updateMeta(true),
+      m_3dMode(false) {
   ui.setupUi(this);
   lastInputDir = QDir::homePath();
   lastOutputDir = QDir::homePath();
@@ -353,7 +341,7 @@ TsMuxerWindow::TsMuxerWindow()
     settings = new QSettings(iniName, QSettings::IniFormat);
     settings->setIniCodec("UTF-8");
     if (!readSettings())
-      writeSettings(); // copy current registry settings to the ini file
+      writeSettings();  // copy current registry settings to the ini file
   }
 
   ui.outFileName->setText(getDefaultOutputFileName());
@@ -566,16 +554,16 @@ TsMuxerWindow::TsMuxerWindow()
   ui.langComboBox->addItem("--------- common ---------");
   for (int i = 0; i < sizeof(shortLangList) / 2 / sizeof(char *); ++i) {
     const char *addr = shortLangList[i][0];
-    ui.langComboBox->addItem(QString(shortLangList[i][0]) + " (" +
-                                 shortLangList[i][1] + ")",
-                             (qlonglong)(void *)addr);
+    ui.langComboBox->addItem(
+        QString(shortLangList[i][0]) + " (" + shortLangList[i][1] + ")",
+        (qlonglong)(void *)addr);
   }
   ui.langComboBox->addItem("---------- all ----------");
   for (int i = 0; i < sizeof(fullLangList) / 2 / sizeof(char *); ++i) {
     const char *addr = fullLangList[i][0];
-    ui.langComboBox->addItem(QString(fullLangList[i][0]) + " (" +
-                                 fullLangList[i][1] + ")",
-                             (qlonglong)(void *)addr);
+    ui.langComboBox->addItem(
+        QString(fullLangList[i][0]) + " (" + fullLangList[i][1] + ")",
+        (qlonglong)(void *)addr);
   }
   trackLVItemSelectionChanged();
 
@@ -670,17 +658,17 @@ void TsMuxerWindow::getCodecInfo() {
       msgBox.setStandardButtons(QMessageBox::Ok);
       msgBox.exec();
     } else if (procStdOutput[i].startsWith("File #")) {
-      tmpStr = procStdOutput[i].mid(17); // todo: check here
+      tmpStr = procStdOutput[i].mid(17);  // todo: check here
       mplsFileList << MPLSFileInfo(tmpStr, 0.0);
     } else if (procStdOutput[i].startsWith("Duration:")) {
-      tmpStr = procStdOutput[i].mid(10); // todo: check here
+      tmpStr = procStdOutput[i].mid(10);  // todo: check here
       if (!mplsFileList.empty()) {
         mplsFileList.last().duration = timeToFloat(tmpStr);
       } else {
         fileDuration = timeToFloat(tmpStr);
       }
     } else if (procStdOutput[i].startsWith("Base view: ")) {
-      tmpStr = procStdOutput[i].mid(11); // todo: check here
+      tmpStr = procStdOutput[i].mid(11);  // todo: check here
       ui.rightEyeCheckBox->setChecked(tmpStr.trimmed() == "right-eye");
     } else if (procStdOutput[i].startsWith("start-time: ")) {
       tmpStr = procStdOutput[i].mid(12);
@@ -700,8 +688,7 @@ void TsMuxerWindow::getCodecInfo() {
       }
       QStringList stringList = procStdOutput[i].mid(7).split(' ');
       for (int k = 0; k < stringList.size(); ++k)
-        if (!stringList[k].isEmpty())
-          chapters << timeToFloat(stringList[k]);
+        if (!stringList[k].isEmpty()) chapters << timeToFloat(stringList[k]);
     }
   }
   if (fileDuration == 0 && !mplsFileList.isEmpty()) {
@@ -736,8 +723,7 @@ int TsMuxerWindow::findLangByCode(const QString &code) {
 }
 
 QtvCodecInfo *TsMuxerWindow::getCurrentCodec() {
-  if (ui.trackLV->currentRow() == -1)
-    return nullptr;
+  if (ui.trackLV->currentRow() == -1) return nullptr;
   long iCodec = long(ui.trackLV->item(ui.trackLV->currentRow(), 0)
                          ->data(Qt::UserRole)
                          .toLongLong());
@@ -746,11 +732,9 @@ QtvCodecInfo *TsMuxerWindow::getCurrentCodec() {
 
 void TsMuxerWindow::onVideoComboBoxChanged(int index) {
   Q_UNUSED(index);
-  if (disableUpdatesCnt)
-    return;
+  if (disableUpdatesCnt) return;
   QtvCodecInfo *codecInfo = getCurrentCodec();
-  if (!codecInfo)
-    return;
+  if (!codecInfo) return;
   codecInfo->fpsText = ui.comboBoxFPS->itemText(ui.comboBoxFPS->currentIndex());
   codecInfo->levelText =
       ui.comboBoxLevel->itemText(ui.comboBoxLevel->currentIndex());
@@ -760,11 +744,9 @@ void TsMuxerWindow::onVideoComboBoxChanged(int index) {
 
 void TsMuxerWindow::onVideoCheckBoxChanged(int state) {
   Q_UNUSED(state);
-  if (disableUpdatesCnt)
-    return;
+  if (disableUpdatesCnt) return;
   QtvCodecInfo *codecInfo = getCurrentCodec();
-  if (codecInfo == nullptr)
-    return;
+  if (codecInfo == nullptr) return;
   ui.comboBoxFPS->setEnabled(ui.checkFPS->isChecked());
   codecInfo->checkFPS = ui.checkFPS->isChecked();
   ui.comboBoxLevel->setEnabled(ui.checkBoxLevel->isChecked());
@@ -777,10 +759,8 @@ void TsMuxerWindow::onVideoCheckBoxChanged(int state) {
 }
 
 void TsMuxerWindow::updateCurrentColor(int dr, int dg, int db, int row) {
-  if (row == -1)
-    row = ui.trackLV->currentRow();
-  if (row == -1)
-    return;
+  if (row == -1) row = ui.trackLV->currentRow();
+  if (row == -1) return;
   QColor color = ui.trackLV->palette().color(QPalette::Base);
   color.setRed(qBound(0, color.red() + dr, 255));
   color.setGreen(qBound(0, color.green() + dg, 255));
@@ -800,11 +780,9 @@ void TsMuxerWindow::colorizeCurrentRow(const QtvCodecInfo *codecInfo,
 }
 
 void TsMuxerWindow::onAudioSubtitlesParamsChanged() {
-  if (disableUpdatesCnt)
-    return;
+  if (disableUpdatesCnt) return;
   QtvCodecInfo *codecInfo = getCurrentCodec();
-  if (!codecInfo)
-    return;
+  if (!codecInfo) return;
   codecInfo->bindFps = ui.checkBoxKeepFps->isChecked();
   codecInfo->dtsDownconvert = ui.dtsDwnConvert->isChecked();
   codecInfo->isSecondary = ui.secondaryCheckBox->isChecked();
@@ -824,22 +802,18 @@ void TsMuxerWindow::onAudioSubtitlesParamsChanged() {
 
 void TsMuxerWindow::onEditDelayChanged(int i) {
   Q_UNUSED(i);
-  if (disableUpdatesCnt)
-    return;
+  if (disableUpdatesCnt) return;
   QtvCodecInfo *codecInfo = getCurrentCodec();
-  if (!codecInfo)
-    return;
+  if (!codecInfo) return;
   codecInfo->delay = ui.editDelay->value();
   updateMetaLines();
 }
 
 void TsMuxerWindow::onPulldownCheckBoxChanged(int state) {
   Q_UNUSED(state);
-  if (disableUpdatesCnt)
-    return;
+  if (disableUpdatesCnt) return;
   QtvCodecInfo *codecInfo = getCurrentCodec();
-  if (!codecInfo)
-    return;
+  if (!codecInfo) return;
   if (ui.checkBoxRemovePulldown->isEnabled()) {
     if (ui.checkBoxRemovePulldown->isChecked()) {
       codecInfo->delPulldown = 1;
@@ -868,8 +842,7 @@ void TsMuxerWindow::addFiles(const QList<QUrl> &files) {
 void TsMuxerWindow::onAddBtnClick() {
   QString fileName = QDir::toNativeSeparators(QFileDialog::getOpenFileName(
       this, tr("Add media file"), lastInputDir, tr(fileDialogFilter)));
-  if (fileName.isEmpty())
-    return;
+  if (fileName.isEmpty()) return;
   lastInputDir = fileName;
   // disconnect();
   addFileList.clear();
@@ -878,14 +851,12 @@ void TsMuxerWindow::onAddBtnClick() {
 }
 
 void TsMuxerWindow::addFile() {
-  if (addFileList.isEmpty())
-    return;
+  if (addFileList.isEmpty()) return;
   newFileName = QDir::toNativeSeparators(addFileList[0].toLocalFile());
   if (lastSourceDir.isEmpty())
     lastSourceDir = QFileInfo(newFileName).absolutePath();
   addFileList.removeAt(0);
-  if (!checkFileDuplicate(newFileName))
-    return;
+  if (!checkFileDuplicate(newFileName)) return;
   // disconnect(this, SIGNAL(tsMuxerSuccessFinished()));
   // disconnect(this, SIGNAL(codecListReady()));
   disconnect();
@@ -927,17 +898,14 @@ void TsMuxerWindow::setComboBoxText(QComboBox *comboBox, const QString &text) {
 }
 
 void TsMuxerWindow::trackLVItemSelectionChanged() {
-  if (disableUpdatesCnt)
-    return;
-  while (ui.tabWidgetTracks->count())
-    ui.tabWidgetTracks->removeTab(0);
+  if (disableUpdatesCnt) return;
+  while (ui.tabWidgetTracks->count()) ui.tabWidgetTracks->removeTab(0);
   if (ui.trackLV->currentRow() == -1) {
     ui.tabWidgetTracks->addTab(ui.tabSheetFake, TI_DEFAULT_TAB_NAME);
     return;
   }
   QtvCodecInfo *codecInfo = getCurrentCodec();
-  if (!codecInfo)
-    return;
+  if (!codecInfo) return;
   disableUpdatesCnt++;
   if (ui.trackLV->rowCount() >= 1) {
     if (isVideoCodec(codecInfo->displayName)) {
@@ -1020,16 +988,14 @@ void TsMuxerWindow::trackLVItemSelectionChanged() {
 }
 
 void TsMuxerWindow::trackLVItemChanged(QTableWidgetItem *item) {
-  if (disableUpdatesCnt > 0)
-    return;
+  if (disableUpdatesCnt > 0) return;
 
   Q_UNUSED(item);
   updateMetaLines();
   ui.moveupBtn->setEnabled(ui.trackLV->currentItem() != 0);
   ui.movedownBtn->setEnabled(ui.trackLV->currentItem() != 0);
   ui.removeTrackBtn->setEnabled(ui.trackLV->currentItem() != 0);
-  if (ui.trackLV->rowCount() == 0)
-    oldFileName.clear();
+  if (ui.trackLV->rowCount() == 0) oldFileName.clear();
 
   disableUpdatesCnt++;
   bool checkedExist = false;
@@ -1098,8 +1064,7 @@ void TsMuxerWindow::continueAddFile() {
   bool firstWarn = true;
   int firstAddedIndex = -1;
   for (int i = 0; i < codecList.size(); ++i) {
-    if (codecList[i].displayName == "PGS (depended view)")
-      continue;
+    if (codecList[i].displayName == "PGS (depended view)") continue;
 
     QtvCodecInfo info = codecList[i];
     if (info.displayName.isEmpty()) {
@@ -1151,12 +1116,10 @@ void TsMuxerWindow::continueAddFile() {
     info.fpsTextOrig = myFloatToStr(fps);
     level = extractFloatFromDescr(info.descr, "@");
     info.levelText = myFloatToStr(level);
-    if (info.descr.indexOf("pulldown") >= 0)
-      info.delPulldown = 0;
+    if (info.descr.indexOf("pulldown") >= 0) info.delPulldown = 0;
 
     info.maxPgOffsets = extractFloatFromDescr(info.descr, "3d-pg-planes: ");
-    if (info.maxPgOffsets > 0)
-      m_3dMode = true;
+    if (info.maxPgOffsets > 0) m_3dMode = true;
 
     if (info.descr.contains("3d-plane: zero"))
       info.offsetId = -1;
@@ -1187,8 +1150,7 @@ void TsMuxerWindow::continueAddFile() {
     item = new QTableWidgetItem(info.descr);
     item->setFlags(item->flags() & (~Qt::ItemIsEditable));
     ui.trackLV->setItem(ui.trackLV->rowCount() - 1, 4, item);
-    if (firstAddedIndex == -1)
-      firstAddedIndex = ui.trackLV->rowCount() - 1;
+    if (firstAddedIndex == -1) firstAddedIndex = ui.trackLV->rowCount() - 1;
     colorizeCurrentRow(&info, ui.trackLV->rowCount() - 1);
   }
   if (firstAddedIndex >= 0) {
@@ -1206,8 +1168,7 @@ void TsMuxerWindow::continueAddFile() {
 
   int index = ui.inputFilesLV->count() - 1;
   QListWidgetItem *fileItem = ui.inputFilesLV->item(index);
-  if (!mplsFileList.empty())
-    fileItem->setData(MplsItemRole, MPLS_PRIMARY);
+  if (!mplsFileList.empty()) fileItem->setData(MplsItemRole, MPLS_PRIMARY);
   fileItem->setData(FileNameRole, newFileName);
   QVariant v;
   v.setValue<ChapterList>(chapters);
@@ -1245,8 +1206,7 @@ void TsMuxerWindow::updateCustomChapters() {
   double offset = 0.0;
   for (int i = 0; i < ui.inputFilesLV->count(); ++i) {
     QListWidgetItem *item = ui.inputFilesLV->item(i);
-    if (item->data(MplsItemRole).toInt() == MPLS_M2TS)
-      continue;
+    if (item->data(MplsItemRole).toInt() == MPLS_M2TS) continue;
     if (item->text().left(4) == FILE_JOIN_PREFIX)
       offset += prevDuration;
     else
@@ -1284,8 +1244,7 @@ void TsMuxerWindow::addLines(const QByteArray &arr, QList<QString> &outList,
   splitLines(str, strList);
   QString text;
   for (int i = 0; i < strList.size(); ++i) {
-    if (strList[i].trimmed().isEmpty())
-      continue;
+    if (strList[i].trimmed().isEmpty()) continue;
     int p = strList[i].indexOf("% complete");
     if (p >= 0) {
       int numStartPos = 0;
@@ -1299,11 +1258,10 @@ void TsMuxerWindow::addLines(const QByteArray &arr, QList<QString> &outList,
       float tmpVal = progress.toFloat();
       if (qAbs(tmpVal) > 0 && runInMuxMode)
         muxForm.setProgress(
-            int(double(tmpVal * 10) + 0.5)); // todo: uncomment here
+            int(double(tmpVal * 10) + 0.5));  // todo: uncomment here
     } else {
       if (runInMuxMode) {
-        if (!text.isEmpty())
-          text += '\n';
+        if (!text.isEmpty()) text += '\n';
         text += strList[i];
       } else
         outList << strList[i];
@@ -1328,8 +1286,7 @@ void TsMuxerWindow::readFromStderr() {
 
 void TsMuxerWindow::myPlaySound(const QString &fileName) {
   QFile file(fileName);
-  if (!file.open(QFile::ReadOnly))
-    return;
+  if (!file.open(QFile::ReadOnly)) return;
   qint64 fSize = file.size();
   char *data = new char[fSize];
   qint64 readed = file.read(data, fSize);
@@ -1376,8 +1333,7 @@ void TsMuxerWindow::onProcessFinished(int exitCode,
   ui.buttonMux->setEnabled(true);
   ui.addBtn->setEnabled(true);
   inputFilesLVChanged();
-  if (processExitCode == 0)
-    emit tsMuxerSuccessFinished();
+  if (processExitCode == 0) emit tsMuxerSuccessFinished();
 }
 
 void TsMuxerWindow::onProcessError(QProcess::ProcessError error) {
@@ -1391,26 +1347,24 @@ void TsMuxerWindow::onProcessError(QProcess::ProcessError error) {
   QString text;
   msgBox.setWindowTitle("tsMuxeR error");
   switch (error) {
-  case QProcess::FailedToStart:
-    msgBox.setText("tsMuxeR not found!");
-    ui.buttonMux->setEnabled(true);
-    ui.addBtn->setEnabled(true);
-    inputFilesLVChanged();
-    break;
-  case QProcess::Crashed:
-    // process killed
-    if (runInMuxMode)
-      return;
-    for (int i = 0; i < procErrOutput.size(); ++i) {
-      if (i > 0)
-        text += '\n';
-      text += procErrOutput[i];
-    }
-    msgBox.setText(text);
-    break;
-  default:
-    msgBox.setText("Can't execute tsMuxeR!");
-    break;
+    case QProcess::FailedToStart:
+      msgBox.setText("tsMuxeR not found!");
+      ui.buttonMux->setEnabled(true);
+      ui.addBtn->setEnabled(true);
+      inputFilesLVChanged();
+      break;
+    case QProcess::Crashed:
+      // process killed
+      if (runInMuxMode) return;
+      for (int i = 0; i < procErrOutput.size(); ++i) {
+        if (i > 0) text += '\n';
+        text += procErrOutput[i];
+      }
+      msgBox.setText(text);
+      break;
+    default:
+      msgBox.setText("Can't execute tsMuxeR!");
+      break;
   }
   msgBox.setIcon(QMessageBox::Critical);
   msgBox.setStandardButtons(QMessageBox::Ok);
@@ -1425,25 +1379,21 @@ void TsMuxerWindow::shellExecute(const QString &process,
   processFinished = false;
   processExitCode = -1;
   proc.start(process, args);
-  if (muxForm.isVisible())
-    muxForm.setProcess(&proc);
+  if (muxForm.isVisible()) muxForm.setProcess(&proc);
 }
 
 void TsMuxerWindow::doAppendInt(const QString &fileName,
                                 const QString &parentFileName, double duration,
                                 bool doublePrefix, MplsType mplsRole) {
   QString itemName = FILE_JOIN_PREFIX;
-  if (doublePrefix)
-    itemName += FILE_JOIN_PREFIX;
+  if (doublePrefix) itemName += FILE_JOIN_PREFIX;
   itemName += fileName;
-  if (duration > 0)
-    itemName += QString(" ( %1)").arg(floatToTime(duration));
+  if (duration > 0) itemName += QString(" ( %1)").arg(floatToTime(duration));
   QListWidgetItem *item = new QListWidgetItem(itemName);
   ui.inputFilesLV->insertItem(ui.inputFilesLV->currentRow() + 1, item);
   item->setData(MplsItemRole, mplsRole);
   item->setData(FileNameRole, fileName);
-  if (duration > 0)
-    item->setData(FileDurationRole, duration);
+  if (duration > 0) item->setData(FileDurationRole, duration);
   QVariant v;
   v.setValue<ChapterList>(chapters);
   item->setData(ChaptersRole, v);
@@ -1452,8 +1402,7 @@ void TsMuxerWindow::doAppendInt(const QString &fileName,
 
   for (int i = 0; i < ui.trackLV->rowCount(); ++i) {
     long data = ui.trackLV->item(i, 0)->data(Qt::UserRole).toLongLong();
-    if (!data)
-      continue;
+    if (!data) continue;
     QtvCodecInfo *info = (QtvCodecInfo *)(void *)data;
     if (mplsRole == MPLS_PRIMARY) {
       for (int j = 0; j < info->mplsFiles.size(); ++j) {
@@ -1476,8 +1425,7 @@ void TsMuxerWindow::doAppendInt(const QString &fileName,
 bool TsMuxerWindow::isVideoCropped() {
   for (int i = 0; i < ui.trackLV->rowCount(); ++i) {
     long iCodec = ui.trackLV->item(i, 0)->data(Qt::UserRole).toLongLong();
-    if (!iCodec)
-      continue;
+    if (!iCodec) continue;
     QtvCodecInfo *codecInfo = (QtvCodecInfo *)(void *)iCodec;
     if (isVideoCodec(codecInfo->displayName)) {
       if (codecInfo->height < 1080 && codecInfo->height != 720 &&
@@ -1497,8 +1445,7 @@ bool TsMuxerWindow::isDiskOutput() const {
 
 QString TsMuxerWindow::getMuxOpts() {
   QString rez = "MUXOPT --no-pcr-on-video-pid ";
-  if (ui.checkBoxNewAudioPes->isChecked())
-    rez += "--new-audio-pes ";
+  if (ui.checkBoxNewAudioPes->isChecked()) rez += "--new-audio-pes ";
   if (ui.radioButtonBluRay->isChecked())
     rez += "--blu-ray ";
   else if (ui.radioButtonBluRayISO->isChecked()) {
@@ -1554,8 +1501,7 @@ QString TsMuxerWindow::getMuxOpts() {
       for (int i = 0; i < lines.size(); ++i) {
         QString tmpStr = lines[i].trimmed();
         if (!tmpStr.isEmpty()) {
-          if (!custChapStr.isEmpty())
-            custChapStr += ';';
+          if (!custChapStr.isEmpty()) custChapStr += ';';
           custChapStr += tmpStr;
         }
       }
@@ -1577,11 +1523,9 @@ QString TsMuxerWindow::getMuxOpts() {
     rez += QString(" --cut-end=%1ms").arg(endCut);
 
   int vbvLen = ui.editVBVLen->value();
-  if (vbvLen > 0)
-    rez += " --vbv-len=" + QString::number(vbvLen);
+  if (vbvLen > 0) rez += " --vbv-len=" + QString::number(vbvLen);
 
-  if (isDiskOutput() && ui.rightEyeCheckBox->isChecked())
-    rez += " --right-eye";
+  if (isDiskOutput() && ui.rightEyeCheckBox->isChecked()) rez += " --right-eye";
   /*
   QString muxTimeStr = ui.muxTimeEdit->time().toString("hh:mm:ss.zzz");
   if (muxTimeStr != "00:00:00.000")
@@ -1594,22 +1538,22 @@ QString TsMuxerWindow::getMuxOpts() {
 
 int getCharsetCode(const QString &name) {
   Q_UNUSED(name);
-  return 0; // todo: refactor this function
+  return 0;  // todo: refactor this function
 }
 
 double TsMuxerWindow::getRendererAnimationTime() const {
   switch (ui.comboBoxAnimation->currentIndex()) {
-  case 1:
-    return 0.1; // fast
-    break;
-  case 2:
-    return 0.25; // medium
-    break;
-  case 3:
-    return 0.5; // slow
-    break;
-  case 4:
-    return 1.0; // very slow
+    case 1:
+      return 0.1;  // fast
+      break;
+    case 2:
+      return 0.25;  // medium
+      break;
+    case 3:
+      return 0.5;  // slow
+      break;
+    case 4:
+      return 1.0;  // very slow
   }
   return 0.0;
 }
@@ -1630,8 +1574,7 @@ void TsMuxerWindow::setRendererAnimationTime(double value) {
 
 QString TsMuxerWindow::getSrtParams() {
   QString rez;
-  if (ui.listViewFont->rowCount() < 5)
-    return rez;
+  if (ui.listViewFont->rowCount() < 5) return rez;
   rez = QString(",font-name=\"") + ui.listViewFont->item(0, 1)->text();
   rez += QString("\",font-size=") + ui.listViewFont->item(1, 1)->text();
   rez += QString(",font-color=") + ui.listViewFont->item(2, 1)->text();
@@ -1666,8 +1609,7 @@ QString TsMuxerWindow::getSrtParams() {
   for (int i = 0; i < ui.trackLV->rowCount(); ++i) {
     if (ui.trackLV->item(i, 0)->checkState() == Qt::Checked) {
       long iCodec = ui.trackLV->item(i, 0)->data(Qt::UserRole).toLongLong();
-      if (!iCodec)
-        continue;
+      if (!iCodec) continue;
       QtvCodecInfo *codecInfo = (QtvCodecInfo *)(void *)iCodec;
       if (isVideoCodec(codecInfo->displayName)) {
         rez += QString(",video-width=") + QString::number(codecInfo->width);
@@ -1686,14 +1628,12 @@ QString TsMuxerWindow::getFileList(QtvCodecInfo *codecInfo) {
 
   if (codecInfo->mplsFiles.isEmpty()) {
     for (int i = 0; i < codecInfo->fileList.size(); ++i) {
-      if (i > 0)
-        rezStr += '+';
+      if (i > 0) rezStr += '+';
       rezStr += QString("\"") + codecInfo->fileList[i] + "\"";
     }
   } else {
     for (int i = 0; i < codecInfo->mplsFiles.size(); ++i) {
-      if (i > 0)
-        rezStr += '+';
+      if (i > 0) rezStr += '+';
       rezStr += QString("\"") + codecInfo->mplsFiles[i] + "\"";
     }
   }
@@ -1713,8 +1653,7 @@ QString cornerToStr(int corner) {
 }
 
 QString toPipScaleStr(int scaleIdx) {
-  if (scaleIdx == 0)
-    return "1";
+  if (scaleIdx == 0) return "1";
   if (scaleIdx == 1)
     return "1/2";
   else if (scaleIdx == 2)
@@ -1732,25 +1671,20 @@ QString TsMuxerWindow::getVideoMetaInfo(QtvCodecInfo *codecInfo) {
 
   rezStr += getFileList(codecInfo);
 
-  if (codecInfo->checkFPS)
-    fpsStr = fpsTextToFpsStr(codecInfo->fpsText);
+  if (codecInfo->checkFPS) fpsStr = fpsTextToFpsStr(codecInfo->fpsText);
   if (codecInfo->checkLevel)
     levelStr = QString::number(codecInfo->levelText.toDouble(), 'f', 1);
 
   if (ui.checkBoxCrop->isChecked() && ui.checkBoxCrop->isEnabled())
     rezStr += QString(", ") + "restoreCrop";
-  if (!fpsStr.isEmpty())
-    rezStr += QString(", ") + "fps=" + fpsStr;
-  if (!levelStr.isEmpty())
-    rezStr += QString(", ") + "level=" + levelStr;
+  if (!fpsStr.isEmpty()) rezStr += QString(", ") + "fps=" + fpsStr;
+  if (!levelStr.isEmpty()) rezStr += QString(", ") + "level=" + levelStr;
   if (codecInfo->addSEIMethod == 1)
     rezStr += QString(", ") + "insertSEI";
   else if (codecInfo->addSEIMethod == 2)
     rezStr += QString(", ") + "forceSEI";
-  if (codecInfo->addSPS)
-    rezStr += QString(", ") + "contSPS";
-  if (codecInfo->delPulldown == 1)
-    rezStr += QString(", ") + "delPulldown";
+  if (codecInfo->addSPS) rezStr += QString(", ") + "contSPS";
+  if (codecInfo->delPulldown == 1) rezStr += QString(", ") + "delPulldown";
   if (codecInfo->arText != "Not change" && !codecInfo->arText.isEmpty())
     rezStr += QString(", ") + "ar=" + codecInfo->arText;
 
@@ -1778,8 +1712,7 @@ QString TsMuxerWindow::getAudioMetaInfo(QtvCodecInfo *codecInfo) {
     rezStr += ", down-to-dts";
   else if (codecInfo->dtsDownconvert && codecInfo->programName == "A_AC3")
     rezStr += ", down-to-ac3";
-  if (codecInfo->isSecondary)
-    rezStr += ", secondary";
+  if (codecInfo->isSecondary) rezStr += ", secondary";
   return rezStr;
 }
 
@@ -1802,16 +1735,14 @@ void TsMuxerWindow::updateMuxTime2() {
 }
 
 void TsMuxerWindow::updateMetaLines() {
-  if (!m_updateMeta || disableUpdatesCnt > 0)
-    return;
+  if (!m_updateMeta || disableUpdatesCnt > 0) return;
 
   ui.memoMeta->clear();
   ui.memoMeta->append(getMuxOpts());
   QString tmpFps;
   for (int i = 0; i < ui.trackLV->rowCount(); ++i) {
     long iCodec = ui.trackLV->item(i, 0)->data(Qt::UserRole).toLongLong();
-    if (!iCodec)
-      continue;
+    if (!iCodec) continue;
 
     QtvCodecInfo *codecInfo = (QtvCodecInfo *)(void *)iCodec;
     if (isVideoCodec(codecInfo->displayName)) {
@@ -1834,8 +1765,7 @@ void TsMuxerWindow::updateMetaLines() {
     else
       prefix = "#";
     long iCodec = ui.trackLV->item(i, 0)->data(Qt::UserRole).toLongLong();
-    if (!iCodec)
-      continue;
+    if (!iCodec) continue;
     QtvCodecInfo *codecInfo = (QtvCodecInfo *)(void *)iCodec;
 
     postfix.clear();
@@ -1882,21 +1812,17 @@ void TsMuxerWindow::onFontBtnClicked() {
     ui.listViewFont->item(0, 1)->setText(font.family());
     ui.listViewFont->item(1, 1)->setText(QString::number(font.pointSize()));
     QString optStr;
-    if (font.italic())
-      optStr += "Italic";
+    if (font.italic()) optStr += "Italic";
     if (font.bold()) {
-      if (!optStr.isEmpty())
-        optStr += ',';
+      if (!optStr.isEmpty()) optStr += ',';
       optStr += "Bold";
     }
     if (font.underline()) {
-      if (!optStr.isEmpty())
-        optStr += ',';
+      if (!optStr.isEmpty()) optStr += ',';
       optStr += "Underline";
     }
     if (font.strikeOut()) {
-      if (!optStr.isEmpty())
-        optStr += ',';
+      if (!optStr.isEmpty()) optStr += ',';
       optStr += "Strikeout";
     }
     ui.listViewFont->item(4, 1)->setText(optStr);
@@ -1906,7 +1832,7 @@ void TsMuxerWindow::onFontBtnClicked() {
 }
 
 quint32 bswap(quint32 val) {
-  return val; // ntohl(val);
+  return val;  // ntohl(val);
 }
 
 int colorLight(QColor color) {
@@ -1915,8 +1841,7 @@ int colorLight(QColor color) {
 }
 
 void TsMuxerWindow::setTextItemColor(QString str) {
-  while (str.length() < 8)
-    str = '0' + str;
+  while (str.length() < 8) str = '0' + str;
   QColor color = bswap(str.toLongLong(0, 16));
   QTableWidgetItem *item = ui.listViewFont->item(2, 1);
   item->setBackground(QBrush(color));
@@ -1973,8 +1898,7 @@ void TsMuxerWindow::onSavedParamChanged() {
 void TsMuxerWindow::onFontParamsChanged() { updateMetaLines(); }
 
 void TsMuxerWindow::onRemoveBtnClick() {
-  if (!ui.inputFilesLV->currentItem())
-    return;
+  if (!ui.inputFilesLV->currentItem()) return;
   int idx = ui.inputFilesLV->currentRow();
   bool delMplsM2ts = false;
 
@@ -1993,8 +1917,7 @@ void TsMuxerWindow::onRemoveBtnClick() {
   delTracksByFileName(myUnquoteStr(
       ui.inputFilesLV->currentItem()->data(FileNameRole).toString()));
   ui.inputFilesLV->takeItem(idx);
-  if (idx >= ui.inputFilesLV->count())
-    idx--;
+  if (idx >= ui.inputFilesLV->count()) idx--;
   if (delMplsM2ts) {
     while (idx < ui.inputFilesLV->count()) {
       QString text = ui.inputFilesLV->item(idx)->text();
@@ -2006,8 +1929,7 @@ void TsMuxerWindow::onRemoveBtnClick() {
         break;
     }
   }
-  if (ui.inputFilesLV->count() > 0)
-    ui.inputFilesLV->setCurrentRow(idx);
+  if (ui.inputFilesLV->count() > 0) ui.inputFilesLV->setCurrentRow(idx);
   updateCustomChapters();
 }
 
@@ -2028,8 +1950,7 @@ void TsMuxerWindow::delTracksByFileName(const QString &fileName) {
           break;
         }
       }
-      if (info->fileList.count() == 0)
-        deleteTrack(i);
+      if (info->fileList.count() == 0) deleteTrack(i);
     }
   }
   updateMaxOffsets();
@@ -2040,18 +1961,16 @@ void TsMuxerWindow::deleteTrack(int idx) {
   disableUpdatesCnt++;
   long iCodec = ui.trackLV->item(idx, 0)->data(Qt::UserRole).toLongLong();
   delete (QtvCodecInfo *)(void *)iCodec;
-  int lastItemIndex = idx; // trackLV.items[idx].index;
+  int lastItemIndex = idx;  // trackLV.items[idx].index;
   ui.trackLV->removeRow(idx);
   if (ui.trackLV->rowCount() == 0) {
     lastSourceDir.clear();
-    while (ui.tabWidgetTracks->count())
-      ui.tabWidgetTracks->removeTab(0);
+    while (ui.tabWidgetTracks->count()) ui.tabWidgetTracks->removeTab(0);
     ui.tabWidgetTracks->addTab(ui.tabSheetFake, TI_DEFAULT_TAB_NAME);
     ui.outFileName->setText(getDefaultOutputFileName());
     outFileNameModified = false;
   } else {
-    if (lastItemIndex > ui.trackLV->rowCount() - 1)
-      --lastItemIndex;
+    if (lastItemIndex > ui.trackLV->rowCount() - 1) --lastItemIndex;
     if (lastItemIndex >= 0) {
       ui.trackLV->setCurrentCell(lastItemIndex, 0);
       ui.trackLV->setRangeSelected(
@@ -2086,8 +2005,7 @@ void TsMuxerWindow::onAppendButtonClick() {
   }
   QString fileName = QDir::toNativeSeparators(QFileDialog::getOpenFileName(
       this, tr("Append media file"), lastInputDir, tr(fileDialogFilter)));
-  if (fileName.isEmpty())
-    return;
+  if (fileName.isEmpty()) return;
   lastInputDir = fileName;
   addFileList.clear();
   addFileList << QUrl::fromLocalFile(fileName);
@@ -2095,14 +2013,12 @@ void TsMuxerWindow::onAppendButtonClick() {
 }
 
 void TsMuxerWindow::appendFile() {
-  if (addFileList.isEmpty())
-    return;
+  if (addFileList.isEmpty()) return;
   newFileName = QDir::toNativeSeparators(addFileList[0].toLocalFile());
   if (lastSourceDir.isEmpty())
     lastSourceDir = QFileInfo(newFileName).absolutePath();
   addFileList.removeAt(0);
-  if (!checkFileDuplicate(newFileName))
-    return;
+  if (!checkFileDuplicate(newFileName)) return;
   // disconnect(this, SIGNAL(tsMuxerSuccessFinished()));
   // disconnect(this, SIGNAL(codecListReady()));
   disconnect();
@@ -2168,13 +2084,11 @@ void TsMuxerWindow::continueAppendFile() {
 }
 
 void TsMuxerWindow::onRemoveTrackButtonClick() {
-  if (ui.trackLV->currentItem())
-    deleteTrack(ui.trackLV->currentRow());
+  if (ui.trackLV->currentItem()) deleteTrack(ui.trackLV->currentRow());
 }
 
 void TsMuxerWindow::onMoveUpButtonCLick() {
-  if (ui.trackLV->currentItem() == 0 || ui.trackLV->currentRow() < 1)
-    return;
+  if (ui.trackLV->currentItem() == 0 || ui.trackLV->currentRow() < 1) return;
   disableUpdatesCnt++;
   moveRow(ui.trackLV->currentRow(), ui.trackLV->currentRow() - 1);
   updateMetaLines();
@@ -2196,21 +2110,18 @@ void TsMuxerWindow::onMoveDownButtonCLick() {
 void TsMuxerWindow::moveRow(int index, int index2) {
   ui.trackLV->insertRow(index2);
   ui.trackLV->setRowHeight(index2, 18);
-  if (index2 < index)
-    index++;
+  if (index2 < index) index++;
   for (int i = 0; i < ui.trackLV->columnCount(); ++i)
     ui.trackLV->setItem(index2, i, ui.trackLV->item(index, i)->clone());
   ui.trackLV->removeRow(index);
-  if (index2 > index)
-    index2--;
+  if (index2 > index) index2--;
   ui.trackLV->setRangeSelected(QTableWidgetSelectionRange(index2, 0, index2, 4),
                                true);
   ui.trackLV->setCurrentCell(index2, 0);
 }
 
 void TsMuxerWindow::RadioButtonMuxClick() {
-  if (outFileNameDisableChange)
-    return;
+  if (outFileNameDisableChange) return;
   if (ui.radioButtonDemux->isChecked())
     ui.buttonMux->setText("Sta&rt demuxing");
   else
@@ -2259,8 +2170,7 @@ void TsMuxerWindow::RadioButtonMuxClick() {
 
 void TsMuxerWindow::outFileNameChanged() {
   outFileNameModified = true;
-  if (outFileNameDisableChange)
-    return;
+  if (outFileNameDisableChange) return;
   if (ui.radioButtonDemux->isChecked() || ui.radioButtonBluRay->isChecked() ||
       ui.radioButtonBluRayUHD->isChecked() || ui.radioButtonAVCHD->isChecked())
     return;
@@ -2284,8 +2194,7 @@ void TsMuxerWindow::outFileNameChanged() {
 
   ui.DiskLabel->setVisible(ui.radioButtonBluRayISO->isChecked());
   ui.DiskLabelEdit->setVisible(ui.radioButtonBluRayISO->isChecked());
-  if (isISOMode != isISOModeNew)
-    updateMetaLines();
+  if (isISOMode != isISOModeNew) updateMetaLines();
   outFileNameDisableChange = false;
 }
 
@@ -2375,8 +2284,7 @@ void TsMuxerWindow::startMuxing() {
                    "\" already exists. Do you want to overwrite it?\"");
     msgBox.setIcon(QMessageBox::Question);
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    if (msgBox.exec() != QMessageBox::Yes)
-      return;
+    if (msgBox.exec() != QMessageBox::Yes) return;
   }
 
   QFileInfo fi(ui.outFileName->text());
@@ -2405,8 +2313,7 @@ void TsMuxerWindow::startMuxing() {
 void TsMuxerWindow::saveMetaFileBtnClick() {
   QString metaName = QFileDialog::getSaveFileName(
       this, "", changeFileExt(ui.outFileName->text(), "meta"), saveMetaFilter);
-  if (metaName.isEmpty())
-    return;
+  if (metaName.isEmpty()) return;
   QFileInfo fi(metaName);
   QDir dir;
   dir.mkpath(fi.absolutePath());
@@ -2458,8 +2365,7 @@ void TsMuxerWindow::dropEvent(QDropEvent *event) {
   updateBtns(0);
   QWidget *w = childAt(event->pos());
   QString wName;
-  if (w)
-    wName = w->objectName();
+  if (w) wName = w->objectName();
   if (event->mimeData()->hasFormat("text/uri-list")) {
     addFileList = event->mimeData()->urls();
     event->acceptProposedAction();
@@ -2472,8 +2378,7 @@ void TsMuxerWindow::dropEvent(QDropEvent *event) {
       addFileList << QUrl::fromLocalFile(strList[i]);
     event->acceptProposedAction();
   }
-  if (addFileList.isEmpty())
-    return;
+  if (addFileList.isEmpty()) return;
   if (wName == "btnAppend" && ui.btnAppend->isEnabled())
     appendFile();
   else if (ui.addBtn->isEnabled())
@@ -2524,8 +2429,7 @@ void TsMuxerWindow::updateMaxOffsets() {
 
   for (int i = 0; i < ui.trackLV->rowCount(); ++i) {
     long iCodec = ui.trackLV->item(i, 0)->data(Qt::UserRole).toLongLong();
-    if (!iCodec)
-      continue;
+    if (!iCodec) continue;
 
     QtvCodecInfo *codecInfo = (QtvCodecInfo *)(void *)iCodec;
     if (codecInfo->displayName == "MVC") {
@@ -2557,8 +2461,7 @@ bool TsMuxerWindow::eventFilter(QObject *obj, QEvent *event) {
 }
 
 void TsMuxerWindow::at_sectionCheckstateChanged(Qt::CheckState state) {
-  if (disableUpdatesCnt > 0)
-    return;
+  if (disableUpdatesCnt > 0) return;
 
   disableUpdatesCnt++;
   for (int i = 0; i < ui.trackLV->rowCount(); ++i)
@@ -2568,8 +2471,7 @@ void TsMuxerWindow::at_sectionCheckstateChanged(Qt::CheckState state) {
 }
 
 void TsMuxerWindow::writeSettings() {
-  if (disableUpdatesCnt > 0)
-    return;
+  if (disableUpdatesCnt > 0) return;
 
   disableUpdatesCnt++;
 
@@ -2618,7 +2520,7 @@ bool TsMuxerWindow::readSettings() {
     lastOutputDir = outputDir;
   else {
     settings->endGroup();
-    return false; // no settings still written
+    return false;  // no settings still written
   }
 
   // ui.checkBoxuseAsynIO->setChecked(settings->value("asyncIO").toBool());
@@ -2627,8 +2529,7 @@ bool TsMuxerWindow::readSettings() {
   ui.checkBoxCrop->setChecked(settings->value("restoreCropEnabled").toBool());
   ui.checkBoxBlankPL->setChecked(settings->value("useBlankPL").toBool());
   int plNum = settings->value("blankPLNum").toInt();
-  if (plNum)
-    ui.BlackplaylistCombo->setValue(plNum);
+  if (plNum) ui.BlackplaylistCombo->setValue(plNum);
 
   ui.radioButtonOutoutInInput->setChecked(
       settings->value("outputToInputFolder").toBool());
@@ -2646,8 +2547,7 @@ bool TsMuxerWindow::readSettings() {
   setRendererAnimationTime(settings->value("fadeTime").toDouble());
   ui.spinEditOffset->setValue(settings->value("offset").toInt());
   QString fontName = settings->value("famaly").toString();
-  if (!fontName.isEmpty())
-    ui.listViewFont->item(0, 1)->setText(fontName);
+  if (!fontName.isEmpty()) ui.listViewFont->item(0, 1)->setText(fontName);
   int fontSize = settings->value("size").toInt();
   if (fontSize > 0)
     ui.listViewFont->item(1, 1)->setText(QString::number(fontSize));
