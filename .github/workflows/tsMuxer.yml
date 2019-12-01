@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      image: docker://lanvas2008/tsmuxer_build:latest
+      image: docker://justdan96/tsmuxer_build:latest
       volumes:
       - /workspace:/github/workspace
     
